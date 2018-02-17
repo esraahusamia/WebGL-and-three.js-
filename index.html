@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>test cube</title>
+    <script src="three.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+
+        var renderer;
+        var scene;
+        var camera;
+        var cube;
+
+
+        init();
+        animate();
+        function init() {
+
+            // create a scene.
+            scene = new THREE.Scene();
+
+            // create a camera.
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // create a render.
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(0xf1f1f1, 1.0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMapEnabled = true;
+
+            document.body.appendChild(renderer.domElement);
+
+            // create the ground plane
+            var planeGeometry = new THREE.PlaneGeometry(30, 30);
+            var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
+
+            // rotate and position the plane
+            plane.rotation.x = -0.5 * Math.PI;
+            plane.position.x = 0;
+            plane.position.y = -2;
+            plane.position.z = 0;
+
+            scene.add(plane);
+
+            // create a cube
+            var cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
+            faceColors = [0x96ceb4, 0xffeead, 0x5b9aa0, 0xff6f69, 0xb8a9c9, 0x86af49];
+            faceColors.forEach(function (color, idx) {
+                cubeGeometry.faces[2 * idx + 1].color.setHex(color);
+                cubeGeometry.faces[2 * idx].color.setHex(color);
+            });
+
+            var cubeMaterial = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors });
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+            cube.castShadow = true;
+
+            scene.add(cube);
+
+            camera.position.x = 0;
+            camera.position.y = 16;
+            camera.position.z = 25;
+            camera.lookAt(scene.position);
+
+            var spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set(10, 20, 20);
+            spotLight.shadowCameraNear = 20;
+            spotLight.shadowCameraFar = 50;
+            spotLight.castShadow = true;
+
+            scene.add(spotLight);
+
+
+
+            var Speed = 0.3;
+
+            document.addEventListener("keydown", onKeyDown, false);
+            function onKeyDown(event) {
+                var keyCode = event.which;
+                if (keyCode == 65) {
+                    cube.position.x -= Speed;
+                } else if (keyCode == 87) {
+                    cube.position.z -= Speed;
+                } else if (keyCode == 68) {
+                    cube.position.x += Speed;
+                } else if (keyCode == 83) {
+                    cube.position.z += Speed;
+                } else if (keyCode == 38) {
+                    cube.position.y += Speed;
+                } else if (keyCode == 40) {
+                    cube.position.y -= Speed;
+                } else if (keyCode == 48) {
+                    cube.position.set(0, 0, 0);
+                }
+            };
+
+        }
+
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            render();
+        }
+        function render() {
+            renderer.clear();
+            renderer.render(scene, camera);
+        }
+
+    </script>
+
+
+</body>
+
+</html>
