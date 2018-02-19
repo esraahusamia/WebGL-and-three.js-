@@ -109,12 +109,16 @@
                 var keyCode = event.which;
                 if (keyCode == 65) {
                     cube.position.x -= Speed;
+                    cube.rotation.y -= Speed * 5;
                 } else if (keyCode == 87) {
                     cube.position.z -= Speed;
+                    cube.rotation.x -= Speed * 5;
                 } else if (keyCode == 68) {
                     cube.position.x += Speed;
+                    cube.rotation.y += Speed * 5;
                 } else if (keyCode == 83) {
                     cube.position.z += Speed;
+                    cube.rotation.x-= Speed * 5;
                 } else if (keyCode == 48) {
                     cube.position.set(0, 0, 0);
                 }
