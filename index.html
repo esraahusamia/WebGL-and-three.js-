@@ -4,6 +4,7 @@
 <head>
     <title>Interactive cube</title>
     <script src="js/three.js"></script>
+
     <style>
         body {
             margin: 0;
@@ -18,6 +19,8 @@
 </head>
 
 <body>
+    <div id="stats"></div>
+
     <script>
 
         var renderer;
@@ -25,9 +28,13 @@
         var camera;
         var cube;
 
+        var stats = document.getElementById("stats")
 
         init();
         animate();
+
+        // Initializes the scene, camera and objects. 
+
         function init() {
 
             // create a scene.
@@ -70,10 +77,12 @@
             plane.position.y = -2;
             plane.position.z = 0;
 
+            // add the plane to the scene
             scene.add(plane);
 
             // create a cube
             var cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
+            //array of colors for the cube faces 
             faceColors = [0x96ceb4, 0xffeead, 0x5b9aa0, 0xff6f69, 0xb8a9c9, 0x86af49];
             faceColors.forEach(function (color, idx) {
                 cubeGeometry.faces[2 * idx + 1].color.setHex(color);
@@ -82,16 +91,17 @@
 
             var cubeMaterial = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors });
             var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
             cube.castShadow = true;
-
+            // add the cube to the scene
             scene.add(cube);
 
+            //camera position 
             camera.position.x = 0;
             camera.position.y = 16;
             camera.position.z = 25;
             camera.lookAt(scene.position);
 
+            // add spotlight for the shadows
             var spotLight = new THREE.SpotLight(0xffffff);
             spotLight.position.set(10, 20, 20);
             spotLight.shadowCameraNear = 20;
@@ -101,32 +111,28 @@
             scene.add(spotLight);
 
 
-
+            // onKeyDown function to move and rotate the cube after press on key 
             var Speed = 0.3;
-
             document.addEventListener("keydown", onKeyDown, false);
             function onKeyDown(event) {
                 var keyCode = event.which;
-                if (keyCode == 65) {
+                if (keyCode == 65) {    // a to move left
                     cube.position.x -= Speed;
                     cube.rotation.y -= Speed * 5;
-                } else if (keyCode == 87) {
+                } else if (keyCode == 87) { // w to move up (toward the screen)
                     cube.position.z -= Speed;
                     cube.rotation.x -= Speed * 5;
-                } else if (keyCode == 68) {
+                } else if (keyCode == 68) { //d to move right 
                     cube.position.x += Speed;
                     cube.rotation.y += Speed * 5;
-                } else if (keyCode == 83) {
+                } else if (keyCode == 83) {  //s to move down (toward the player)
                     cube.position.z += Speed;
-                    cube.rotation.x-= Speed * 5;
+                    cube.rotation.x -= Speed * 5;
                 } else if (keyCode == 48) {
                     cube.position.set(0, 0, 0);
                 }
-                // else if (keyCode == 38) {
-                //     cube.position.y += Speed;
-                // } else if (keyCode == 40) {
-                //     cube.position.y -= Speed;
-                // } 
+                //view cube location 
+                stats.innerHTML = "the cube location is " + "( " + cube.position.x + ", " + cube.position.y + ", " + cube.position.z + " )";
 
             };
 
