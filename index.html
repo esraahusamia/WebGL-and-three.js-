@@ -4,6 +4,8 @@
 <head>
     <title>Interactive cube</title>
     <script src="js/three.js"></script>
+    <!-- <script src="js/OrbitContols.js"></script> -->
+    <script src="js/OrbitControls.js"></script>
 
     <style>
         body {
@@ -27,7 +29,8 @@
         var scene;
         var camera;
         var cube;
-
+        var walls = [];
+        var wallWidth = 40;
         var stats = document.getElementById("stats")
 
         init();
@@ -41,7 +44,11 @@
             scene = new THREE.Scene();
 
             // create a camera.
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            // camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+
+
+            walls = new THREE.Object3D();
 
             // create a render.
             renderer = new THREE.WebGLRenderer();
@@ -66,19 +73,67 @@
 
 
             // create the ground plane
-            var planeGeometry = new THREE.PlaneGeometry(30, 30);
-            var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
-            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            var planeGeometry = new THREE.PlaneGeometry(wallWidth, wallWidth);
+            // var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+            THREE.ImageUtils.crossOrigin = '';
+            var floor = THREE.ImageUtils.loadTexture('https://i.imgur.com/Rva730O.jpg');
+
+            var floorTexture = new THREE.MeshBasicMaterial({
+                map: floor,
+                side: THREE.DoubleSide
+            });
+            floorTexture.map.needsUpdate = true;
+
+            var plane = new THREE.Mesh(planeGeometry, floorTexture);
             plane.receiveShadow = true;
 
             // rotate and position the plane
-            plane.rotation.x = -0.5 * Math.PI;
-            plane.position.x = 0;
-            plane.position.y = -2;
-            plane.position.z = 0;
+            plane.overdraw = true;
+            plane.position.set(0, -20, 0);
+            plane.rotation.x = -Math.PI / 2;
 
             // add the plane to the scene
             scene.add(plane);
+
+            //add walls pictures 
+            THREE.ImageUtils.crossOrigin = '';
+            var wall = THREE.ImageUtils.loadTexture('https://i.imgur.com/wsERb2t.jpg');
+            var wallTexture = new THREE.MeshBasicMaterial({
+                map: wall,
+                side: THREE.DoubleSide
+            });
+            wallTexture.map.needsUpdate = true;
+
+            var wallleft = new THREE.Mesh(planeGeometry, wallTexture);
+            wallleft.overdraw = true;
+            wallleft.position.set(-wallWidth / 2, 0, 0);
+            wallleft.rotation.y = Math.PI / 2;
+            walls.add(wallleft);
+            var wallright = new THREE.Mesh(planeGeometry, wallTexture);
+            wallright.overdraw = true;
+            wallright.position.set(wallWidth / 2, 0, 0);
+            wallright.rotation.y = -Math.PI / 2;
+            walls.add(wallright);
+
+            var wallback = new THREE.Mesh(planeGeometry, wallTexture);
+            wallback.overdraw = true;
+            wallback.position.set(0, 0, -wallWidth / 2);
+            walls.add(wallback);
+
+            // var wallfront = new THREE.Mesh(planeGeometry, wallTexture);
+            // wallfront.overdraw = true;
+            // wallfront.position.set(0, 0, wallWidth / 2);
+            // wallfront.rotation.y = -Math.PI;
+            // walls.add(wallfront);
+
+
+            //add walls to scene
+            scene.add(walls);
+
+            //add orbiteControler 
+            var controls;
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+
 
             // create a cube
             var cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
@@ -92,13 +147,15 @@
             var cubeMaterial = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors });
             var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
             cube.castShadow = true;
+            cube.position.set(0, -18.4, 0);
+
             // add the cube to the scene
             scene.add(cube);
 
-            //camera position 
+            // camera position 
             camera.position.x = 0;
-            camera.position.y = 16;
-            camera.position.z = 25;
+            camera.position.y = 20;
+            camera.position.z = 37;
             camera.lookAt(scene.position);
 
             // add spotlight for the shadows
@@ -129,9 +186,9 @@
                     cube.position.z += Speed;
                     cube.rotation.x -= Speed * 5;
                 } else if (keyCode == 48) {
-                    cube.position.set(0, 0, 0);
+                    cube.position.set(0, -18.4, 0);// 0 move to center
                 }
-                //view cube location 
+                //view cube location
                 stats.innerHTML = "the cube location is " + "( " + cube.position.x + ", " + cube.position.y + ", " + cube.position.z + " )";
 
             };
