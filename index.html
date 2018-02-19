@@ -29,6 +29,7 @@
         var scene;
         var camera;
         var cube;
+        var sphere;
         var walls = [];
         var wallWidth = 40;
         var stats = document.getElementById("stats")
@@ -88,9 +89,10 @@
             plane.receiveShadow = true;
 
             // rotate and position the plane
-            plane.overdraw = true;
-            plane.position.set(0, -20, 0);
-            plane.rotation.x = -Math.PI / 2;
+            plane.rotation.x = -0.5 * Math.PI;
+            plane.position.x = 0;
+            plane.position.y = -20;
+            plane.position.z = 0;
 
             // add the plane to the scene
             scene.add(plane);
@@ -120,14 +122,14 @@
             wallback.position.set(0, 0, -wallWidth / 2);
             walls.add(wallback);
 
-            // var wallfront = new THREE.Mesh(planeGeometry, wallTexture);
-            // wallfront.overdraw = true;
-            // wallfront.position.set(0, 0, wallWidth / 2);
-            // wallfront.rotation.y = -Math.PI;
-            // walls.add(wallfront);
+            var wallfront = new THREE.Mesh(planeGeometry, wallTexture);
+            wallfront.overdraw = true;
+            wallfront.rotation.x = -0.5 * Math.PI;
+            wallfront.position.x = 0;
+            wallfront.position.y = 20;
+            wallfront.position.z = 0;
+            walls.add(wallfront);
 
-
-            //add walls to scene
             scene.add(walls);
 
             //add orbiteControler 
@@ -136,9 +138,9 @@
 
 
             // create a cube
-            var cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
+            var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
             //array of colors for the cube faces 
-            faceColors = [0xDAF7A6, 0xFFC300, 0xFF5733, 0xC70039, 0x900C3F, 0x581845];
+            faceColors = [0xC4FF33, 0xFFC300, 0xFF5733, 0xC70039, 0x900C3F, 0x86af49];
             faceColors.forEach(function (color, idx) {
                 cubeGeometry.faces[2 * idx + 1].color.setHex(color);
                 cubeGeometry.faces[2 * idx].color.setHex(color);
@@ -147,16 +149,41 @@
             var cubeMaterial = new THREE.MeshBasicMaterial({ vertexColors: THREE.FaceColors });
             var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
             cube.castShadow = true;
-            cube.position.set(0, -18.4, 0);
+            cube.position.set(0, -17.9, 0);
 
             // add the cube to the scene
             scene.add(cube);
 
+            // add wire to the lamp
+            var map = new THREE.TextureLoader().load('https://i.imgur.com/wsERb2t.jpg');
+            map.wrapS = map.wrapT = THREE.RepeatWrapping;
+            map.anisotropy = 10;
+            var material = new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide });
+            var points = [];
+            for (var i = 0; i < 6; i++) {
+                points.push(new THREE.Vector2(1, i + 5));
+            }
+
+            object = new THREE.Mesh(new THREE.LatheGeometry(points, 20), material);
+            object.position.set(0, 10, 0);
+            scene.add(object);
+
+            // add roate lamp 
+            geo = new THREE.SphereGeometry(5, 25, 25);
+            sphere = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true }));
+            sphere.position.set(0, 10, 0);
+
+            var multi = new THREE.Object3D()
+            multi.add(sphere);
+            multi.position.z = 0;
+
+            scene.add(multi);
             // camera position 
             camera.position.x = 0;
             camera.position.y = 20;
             camera.position.z = 37;
             camera.lookAt(scene.position);
+
 
             // add spotlight for the shadows
             var spotLight = new THREE.SpotLight(0xffffff);
@@ -199,6 +226,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            sphere.rotateY(Math.PI / 180);
             render();
         }
         function render() {
