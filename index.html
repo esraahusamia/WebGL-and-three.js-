@@ -2,8 +2,8 @@
 <html>
 
 <head>
-    <title>test cube</title>
-    <script src="three.js"></script>
+    <title>Interactive cube</title>
+    <script src="js/three.js"></script>
     <style>
         body {
             margin: 0;
@@ -43,6 +43,20 @@
             renderer.shadowMapEnabled = true;
 
             document.body.appendChild(renderer.domElement);
+
+            /*
+            * Function handles the resize event. This make sure the camera and the renderer
+            * are updated at the correct moment.
+            */
+
+            window.addEventListener('resize', handleResize, false);
+
+            function handleResize() {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            }
+
 
             // create the ground plane
             var planeGeometry = new THREE.PlaneGeometry(30, 30);
@@ -101,13 +115,15 @@
                     cube.position.x += Speed;
                 } else if (keyCode == 83) {
                     cube.position.z += Speed;
-                } else if (keyCode == 38) {
-                    cube.position.y += Speed;
-                } else if (keyCode == 40) {
-                    cube.position.y -= Speed;
                 } else if (keyCode == 48) {
                     cube.position.set(0, 0, 0);
                 }
+                // else if (keyCode == 38) {
+                //     cube.position.y += Speed;
+                // } else if (keyCode == 40) {
+                //     cube.position.y -= Speed;
+                // } 
+
             };
 
         }
