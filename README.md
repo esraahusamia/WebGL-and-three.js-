@@ -12,5 +12,6 @@
 #Press W to move up (toward the screen  if 3D)
 #Press S to move down (toward the player if 3D)
 
+#you can see the location of the cube whin you move it in top left of the screen 
 
 # you can use mouse to resize the screen or to rotate and controle the element in the screen 
